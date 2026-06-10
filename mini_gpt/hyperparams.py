@@ -1,20 +1,22 @@
 class Hyperparams():
-    # Training
-    epochs = 10
-    max_steps = 1024
-
-    # Architecture
-    layers = 6
-    n_heads = 8
-    mlp_hidden = embedding_size * 2
-    pe = ['sinusoidal', 'learnable', 'rope', 'alibi']
-
     # input
     embedding_size = 512
     max_length = 1024
     batch_size = 64
+    vocab_size = 32000
+
+    # Architecture
+    layers = 6
+    n_heads = 8
+    mlp_hidden = embedding_size * 4
+    pe = 'rope'
+    rope_base = 100000
+    dropout = 0.1
 
     # Training
+    epochs = 10
+    max_steps = 2000
     lr = 1e-4
     weight_decay = 0.001
-    
+    warmup_steps = 200
+
