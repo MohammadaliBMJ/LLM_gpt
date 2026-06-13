@@ -6,7 +6,7 @@ class BPETokenizer:
         self.vocabs = {i for i in range(256)}  # Initialize vocab with byte tokens
         self.merges = []    
 
-    def train(self, texts: str):
+    def train(self, texts: list[str]):
         """Train the BPE tokenizer on the texts."""
         text_bytes = [list(text.encode('utf-8')) for text in texts]
 
