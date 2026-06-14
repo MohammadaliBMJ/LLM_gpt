@@ -7,7 +7,11 @@ class BPETokenizer:
         self.merges = []    
 
     def train(self, texts: list[str]):
-        """Train the BPE tokenizer on the texts."""
+        """train BPE tokenizer on texts.
+
+        Args:
+            texts (list[str]): list of texts to train the tokenizer on
+        """
         text_bytes = [list(text.encode('utf-8')) for text in texts]
 
         while len(self.vocabs) < self.vocab_size:
@@ -37,7 +41,14 @@ class BPETokenizer:
                         i += 1
 
     def encode(self, text: str):
-        """Encode the text into a list of token IDs."""
+        """encode  the input text using BPE tokenizer.
+
+        Args:
+            text (str): input text to encode.
+
+        Returns:
+            list[int]: list of token IDs representing the encoded text.
+        """
         text_bytes = list(text.encode('utf-8'))
         for pair_1, pair_2, new_token_id in self.merges:
             i = 0
@@ -50,7 +61,14 @@ class BPETokenizer:
         return text_bytes
 
     def decode(self, tokens):
-        """Decode a list of token IDs back into a string."""
+        """decode the input tokens to text
+
+        Args:
+            tokens (list[int]): list of token IDs to decode.
+
+        Returns:
+            str: the decoded text.
+        """
         for pair_1, pair_2, new_token_id in reversed(self.merges):
             i = 0
             while i < len(tokens):
