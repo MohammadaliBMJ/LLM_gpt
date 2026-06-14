@@ -1,12 +1,13 @@
 import pytest
 from src.tokenizers.byte_tokenizer import ByteTokenizer
 from src.tokenizers.bpe_tokenizer import BPETokenizer
+from src.tokenizers.char_tokenizer import CharTokenizer
 
 
 # Byte tokenizer tests
 @pytest.fixture
 def byte_tokenizer():
-    """Return tokens using ByteTokenizer.
+    """Return ByteTokenizer.
 
     Returns:
         ByteTokenizer: An instance of the ByteTokenizer.
@@ -56,7 +57,7 @@ def test_byte_tokenizer_vocab_size(byte_tokenizer):
 # BPE tokenizer tests
 @pytest.fixture
 def bpe_tokenizer():
-    """Return tokens using BPETokenizer.
+    """Return BPETokenizer.
 
     Returns:
         BPETokenizer: An instance of the BPETokenizer.
@@ -89,5 +90,39 @@ def test_bpe_tokenizer_decode(bpe_tokenizer):
     bpe_tokenizer.train(texts)
     tokens = bpe_tokenizer.encode("hello this is a test")
     decoded_text = bpe_tokenizer.decode(tokens)
+    assert isinstance(decoded_text, str), f"Expected decoded text to be a string, got {type(decoded_text)}"
+    assert decoded_text == "hello this is a test", f"Expected 'hello this is a test', but got '{decoded_text}'"
+
+# Character tokenizer tests
+@pytest.fixture
+def char_tokenizer():
+    """Return CharTokenizer.
+
+    Returns:
+        CharTokenizer: An instance of the CharTokenizer.
+    """
+    return CharTokenizer()
+
+def test_char_tokenizer_train(char_tokenizer):
+    """Test the CharTokenizer can train on a simple text."""
+    texts = ["hello this is a test for Char tokenizer", "another test sentence for our tokenizer"]
+    char_tokenizer.train(texts)
+    assert len(char_tokenizer.char_to_id) > 2, "Expected char_to_id to have more than 2 entries after training"
+    assert len(char_tokenizer.id_to_char) > 2, "Expected id_to_char to have more than 2 entries after training"
+
+def test_char_tokenizer_encode(char_tokenizer):
+    """Test the CharTokenizer can encode text after training."""
+    texts = ["hello this is a test for Char tokenizer", "another test sentence for our tokenizer"]
+    char_tokenizer.train(texts)
+    tokens = char_tokenizer.encode("hello this is a test")
+    assert isinstance(tokens, list), f"Expected tokens to be a list, got {type(tokens)}"
+    assert all(isinstance(token, int) for token in tokens), "Expected all tokens to be integers"
+
+def test_char_tokenizer_decode(char_tokenizer):
+    """Test the CharTokenizer can decode tokens back to text."""
+    texts = ["hello this is a test for Char tokenizer", "another test sentence for our tokenizer"]
+    char_tokenizer.train(texts)
+    tokens = char_tokenizer.encode("hello this is a test")
+    decoded_text = char_tokenizer.decode(tokens)
     assert isinstance(decoded_text, str), f"Expected decoded text to be a string, got {type(decoded_text)}"
     assert decoded_text == "hello this is a test", f"Expected 'hello this is a test', but got '{decoded_text}'"
