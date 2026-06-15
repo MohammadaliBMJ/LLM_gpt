@@ -2,6 +2,7 @@ import pytest
 from src.tokenizers.byte_tokenizer import ByteTokenizer
 from src.tokenizers.bpe_tokenizer import BPETokenizer
 from src.tokenizers.char_tokenizer import CharTokenizer
+from src.tokenizers.unigram_tokenizer import UnigramTokenizer
 
 
 # Byte tokenizer tests
@@ -126,3 +127,51 @@ def test_char_tokenizer_decode(char_tokenizer):
     decoded_text = char_tokenizer.decode(tokens)
     assert isinstance(decoded_text, str), f"Expected decoded text to be a string, got {type(decoded_text)}"
     assert decoded_text == "hello this is a test", f"Expected 'hello this is a test', but got '{decoded_text}'"
+
+# Unigram tokenizer tests
+@pytest.fixture
+def unigram_tokenizer():
+    """Return UnigramTokenizer.
+
+    Returns:
+        UnigramTokenizer: An instance of the UnigramTokenizer.
+    """
+    return UnigramTokenizer(vocab_size=1000)
+
+def test_unigram_tokenizer_train(unigram_tokenizer):
+    """Test the UnigramTokenizer can train on a simple text."""
+    texts = ["hello this is a test for Unigram tokenizer this text is just for testing and demonstration purposes.", 
+             "another test sentence for our tokenizer to build the unigram vocabularies and calculate token probabilities."]
+    unigram_tokenizer.train(texts)
+    assert len(unigram_tokenizer.vocab) > 0, "Expected vocab to be populated after training"
+    assert len(unigram_tokenizer.token_probs) > 0, "Expected token_probs to be populated after training"
+
+def test_unigram_tokenizer_segment(unigram_tokenizer):
+    """Test the UnigramTokenizer can segment a word into the best splits with highest probability."""
+    texts = ["hello this is a test for Unigram tokenizer this text is just for testing and demonstration purposes.", 
+             "another test sentence for our tokenizer to build the unigram vocabularies and calculate token probabilities."]
+    unigram_tokenizer.train(texts)
+    segments = unigram_tokenizer.segment("hello")
+    assert isinstance(segments, list), f"Expected segments to be a list, got {type(segments)}"
+    assert all(isinstance(segment, str) for segment in segments), "Expected all segments to be strings"
+
+def test_unigram_tokenizer_encode(unigram_tokenizer):
+    """Test the UnigramTokenizer can encode text after training."""
+    texts = ["hello this is a test for Unigram tokenizer this text is just for testing and demonstration purposes.", 
+             "another test sentence for our tokenizer to build the unigram vocabularies and calculate token probabilities."]
+    unigram_tokenizer.train(texts)
+    segments = unigram_tokenizer.encode("hello this is a test")
+    assert isinstance(segments, list), f"Expected segments to be a list, got {type(segments)}"
+    assert all(isinstance(segment, str) for segment in segments), "Expected all segments to be strings"
+    assert len(segments) > 0, "Expected segments to be non-empty"
+
+def test_unigram_tokenizer_decode(unigram_tokenizer):
+    """Test the UnigramTokenizer can decode tokens back to text."""
+    texts = ["hello this is a test for Unigram tokenizer this text is just for testing and demonstration purposes.", 
+             "another test sentence for our tokenizer to build the unigram vocabularies and calculate token probabilities."]
+    unigram_tokenizer.train(texts)
+    segments = unigram_tokenizer.encode("hello this is a test")
+    decoded_text = unigram_tokenizer.decode(segments)
+    assert isinstance(decoded_text, str), f"Expected decoded text to be a string, got {type(decoded_text)}"
+    assert decoded_text == "hello this is a test", f"Expected 'hello this is a test', but got '{decoded_text}'"
+
