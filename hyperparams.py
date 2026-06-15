@@ -12,7 +12,7 @@ class Hyperparams():
     pe = 'rope' #  Or 'ALiBi', 'learnable', 'sinusoidal'
     rope_base = 100000
     dropout = 0.1
-    tokenizer = 'byte' #  Or 'BPE', 'unigram'
+    tokenizer = 'byte' #  Or 'BPE', 'unigram', 'char'
 
     # Training
     epochs = 10
